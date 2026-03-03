@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@clerk/express": "^1.7.76",
     "@repo/db": "workspace:^",
     "@repo/types": "workspace:^",
     "cors": "^2.8.6",
