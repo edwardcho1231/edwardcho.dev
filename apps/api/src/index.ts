@@ -13,6 +13,11 @@ app.use(clerkMiddleware());
 
 app.use('/api/v1', apiRouter);
 
+app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('Error:', err);
+  res.status(500).json({ error: { code: 'INTERNAL_SERVER_ERROR', message: 'Internal Server Error' } });
+});
+
 const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`API server is running on port ${port}`);
