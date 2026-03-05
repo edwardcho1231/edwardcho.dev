@@ -14,8 +14,13 @@ app.use(clerkMiddleware());
 app.use('/api/v1', apiRouter);
 
 app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error('Error:', err);
-  res.status(500).json({ error: { code: 'INTERNAL_SERVER_ERROR', message: 'Internal Server Error' } });
+  console.error("Error:", err);
+  res.status(500).json({
+    error: {
+      code: err?.code || "INTERNAL_SERVER_ERROR",
+      message: err?.message || "Internal Server Error",
+    },
+  });
 });
 
 const port = process.env.PORT || 3001;
