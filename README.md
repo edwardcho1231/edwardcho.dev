@@ -1,135 +1,160 @@
-# Turborepo starter
+# DocRev Monorepo
 
-This Turborepo starter is maintained by the Turborepo core team.
+DocRev is a Turborepo with:
+- `apps/web`: Next.js + Clerk UI app
+- `apps/api`: Express API with Clerk auth middleware
+- `packages/db`: Prisma schema/client package for Postgres
+- `packages/types`: shared types package scaffold
 
-## Using this example
+## Tech Stack
 
-Run the following command:
+- Node.js + pnpm workspaces + Turborepo
+- Next.js 16 / React 19 (`apps/web`)
+- Express 5 (`apps/api`)
+- Clerk (`@clerk/nextjs`, `@clerk/express`)
+- Prisma + Postgres (`packages/db`)
 
-```sh
-npx create-turbo@latest
+## Repository Layout
+
+```text
+apps/
+  api/      Express API (port 3001)
+  web/      Next.js app (port 3000)
+packages/
+  db/       Prisma schema + Prisma client singleton export
+  types/    Shared types package scaffold
 ```
 
-## What's inside?
+## Prerequisites
 
-This Turborepo includes the following packages/apps:
+- Node.js `>=18` (Node 22 is currently used in this repo)
+- pnpm `9`
+- A Postgres database
+- A Clerk application (publishable key + secret key)
 
-### Apps and Packages
+## Environment Setup
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+Create `apps/web/.env`:
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_xxx
+CLERK_SECRET_KEY=sk_test_xxx
+# Optional but currently present in this repo:
+CLERK_PUBLISHABLE_KEY=pk_test_xxx
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Create `apps/api/.env`:
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+```env
+CLERK_PUBLISHABLE_KEY=pk_test_xxx
+CLERK_SECRET_KEY=sk_test_xxx
+DATABASE_URL=postgresql://USER:PASS@HOST:5432/DB_NAME
+PORT=3001
 ```
 
-### Develop
+Important:
+- `apps/web` and `apps/api` must use keys from the same Clerk instance.
+- A malformed `DATABASE_URL` will fail API startup or Prisma queries.
 
-To develop all apps and packages, run the following command:
+## Install Dependencies
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+```bash
+pnpm install
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Database Setup (Prisma)
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+Apply migrations:
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+```bash
+DATABASE_URL=postgresql://USER:PASS@HOST:5432/DB_NAME \
+pnpm --filter @repo/db exec prisma migrate deploy
 ```
 
-### Remote Caching
+Generate Prisma client:
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+```bash
+DATABASE_URL=postgresql://USER:PASS@HOST:5432/DB_NAME \
+pnpm --filter @repo/db exec prisma generate
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+Optional:
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+```bash
+DATABASE_URL=postgresql://USER:PASS@HOST:5432/DB_NAME \
+pnpm --filter @repo/db exec prisma studio
 ```
 
-## Useful Links
+## Run Locally
 
-Learn more about the power of Turborepo:
+Run all apps:
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+```bash
+pnpm dev
+```
+
+Run apps separately:
+
+```bash
+pnpm --filter web dev
+pnpm --filter api dev
+```
+
+Default URLs:
+- Web: `http://localhost:3000`
+- API: `http://localhost:3001`
+- Health check: `http://localhost:3001/api/v1/health`
+
+## API Endpoints
+
+Current API routes in `apps/api/src/routes`:
+
+- `GET /api/v1/health`
+  - Public
+  - Returns `{ "status": "ok" }`
+
+- `GET /api/v1/documents`
+  - Requires Clerk auth
+  - Returns current user id and document list (including `latestRevision`)
+
+- `POST /api/v1/documents`
+  - Requires Clerk auth
+  - Body:
+    - `title: string`
+    - `content: string`
+  - Creates a `Document`, creates initial `Revision`, then updates `latestRevisionId`
+
+## Testing Authenticated API Calls with curl
+
+1. Sign in to the web app.
+2. In browser console, get a fresh token:
+
+```js
+await window.Clerk.session.getToken()
+```
+
+3. Call API quickly (token is short-lived in local dev):
+
+```bash
+curl -i http://localhost:3001/api/v1/documents \
+  -H "Authorization: Bearer <TOKEN>" \
+  -H "Origin: http://localhost:3000" \
+  -H "Referer: http://localhost:3000/" \
+  -H "Sec-Fetch-Dest: empty" \
+  -H "X-Forwarded-Host: localhost:3000" \
+  -H "X-Forwarded-Proto: http"
+```
+
+## Scripts
+
+From repo root:
+
+- `pnpm dev` runs package `dev` tasks through Turbo
+- `pnpm lint` runs available `lint` tasks (currently `apps/web`)
+- `pnpm format` formats `*.ts`, `*.tsx`, `*.md`
+- `pnpm build` runs package `build` tasks
+
+## Current Status Notes
+
+- `pnpm build` currently fails in `apps/api` because `apps/api/package.json` has `build: tsc` but no `tsconfig.json`.
+- `pnpm check-types` is defined at root but no package currently provides a `check-types` task, so Turbo executes nothing.
