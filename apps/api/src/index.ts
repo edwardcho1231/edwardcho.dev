@@ -6,8 +6,29 @@ import { clerkMiddleware } from '@clerk/express';
 import { apiRouter } from './routes';
 
 const app = express();
+const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:3000')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-app.use(cors());
+app.use(
+  cors({
+    origin(
+      origin: string | undefined,
+      callback: (
+        error: Error | null,
+        options?: boolean | string | RegExp | string[]
+      ) => void
+    ) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(clerkMiddleware());
 
