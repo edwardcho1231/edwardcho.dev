@@ -42,14 +42,14 @@ export default function DocumentsPage() {
     setError(null);
 
     try {
-      await createDocument({
+      const created = await createDocument({
         title: title.trim(),
         content: content.trim(),
       });
 
+      setDocuments((previous) => [created, ...previous]);
       setTitle("");
       setContent("");
-      await loadDocuments();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create document");
     } finally {
