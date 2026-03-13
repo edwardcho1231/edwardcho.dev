@@ -1,4 +1,35 @@
-# DocRev Monorepo
+🚧 **Status: Work in Progress**
+
+# DocRev
+
+DocRev is an experimental editorial platform built with **React, Next.js, and TypeScript** that explores document editing and revision workflows similar to modern editorial CMS systems.
+
+The project is inspired by the CMS tooling I’ve worked on professionally and is used both as a technical experiment and as the publishing system for my personal blog. Authenticated users can create and edit documents, while published documents will power the blog portion of the site.
+
+The goal of DocRev is to explore how document editing, revision history, and publishing workflows can be implemented in a modern full-stack TypeScript application.
+
+Recruiters and visitors can create accounts to try the editor and document workflows.
+
+## Current Features
+
+- User authentication via Clerk
+- Create and delete documents
+- Markdown editor with live preview
+- Document persistence using Postgres + Prisma
+- Basic API layer for document management
+- Monorepo architecture using Turborepo
+
+## Planned Features
+
+- Editing existing documents
+- Draft → Published workflow for blog posts
+- Blog route generated from published documents
+- Revision history timeline
+- Revision comparison
+- Visual diff for document changes
+- Reverting documents to previous revisions
+
+## Repo Setup
 
 DocRev is a Turborepo with:
 - `apps/web`: Next.js + Clerk UI app
@@ -153,8 +184,3 @@ From repo root:
 - `pnpm lint` runs available `lint` tasks (currently `apps/web`)
 - `pnpm format` formats `*.ts`, `*.tsx`, `*.md`
 - `pnpm build` runs package `build` tasks
-
-## Current Status Notes
-
-- `pnpm build` currently fails in `apps/api` because `apps/api/package.json` has `build: tsc` but no `tsconfig.json`.
-- `pnpm check-types` is defined at root but no package currently provides a `check-types` task, so Turbo executes nothing.
