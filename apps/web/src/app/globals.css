@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "@radix-ui/colors/slate.css";
+@plugin "@tailwindcss/typography";
 
 :root {
   --app-background: var(--slate-1);
