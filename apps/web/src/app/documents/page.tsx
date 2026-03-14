@@ -255,6 +255,7 @@ export default function DocumentsPage() {
                       <p className="mt-1 text-sm text-[var(--app-muted)]">
                         Updated {updated.toLocaleString()} • Revision {document.latestRevision?.revisionNumber ?? 0}
                       </p>
+                      <p className="mt-1 text-xs text-[var(--app-muted)]">ID: {document.id}</p>
                       <div className="mt-3">
                         <MarkdownPreview content={preview} clampLines={4} fallback={fallback} />
                       </div>
