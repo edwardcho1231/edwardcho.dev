@@ -233,13 +233,14 @@ export default function DocumentsPage() {
               const updated = new Date(document.updatedAt);
               const preview = document.latestRevision?.content ?? "";
               const fallback = plainTextSummary(preview, 190);
+              const documentTitle = document.latestRevision?.title ?? "Untitled";
 
               return (
                 <li key={document.id}>
                   <Card>
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
-                        <p className="text-lg font-medium">{document.title}</p>
+                        <p className="text-lg font-medium">{documentTitle}</p>
                         <Button
                           type="button"
                           size="sm"

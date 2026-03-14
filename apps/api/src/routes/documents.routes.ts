@@ -60,7 +60,6 @@ documentRouter.post('/', async (req, res) => {
     const document = await tx.document.create({
       data: {
         ownerId: userId,
-        title,
       },
     });
 
@@ -68,16 +67,19 @@ documentRouter.post('/', async (req, res) => {
       data: {
         documentId: document.id,
         revisionNumber: 1,
+        title,
         content,
         createdBy: userId,
       },
     });
 
-    return tx.document.update({
+    const updated = await tx.document.update({
       where: { id: document.id },
       data: { latestRevisionId: revision.id },
       include: { latestRevision: true },
     });
+
+    return updated;
   });
 
   return res.status(201).json(created);

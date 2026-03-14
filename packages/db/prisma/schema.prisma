@@ -9,7 +9,6 @@ generator client {
 model Document {
   id               String     @id @default(dbgenerated("gen_random_uuid()::text"))
   ownerId          String
-  title            String
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @default(now()) @updatedAt
 
@@ -27,6 +26,7 @@ model Revision {
   documentId     String
   createdAt      DateTime  @default(now())
   revisionNumber Int
+  title          String
   content        String
   createdBy      String
 

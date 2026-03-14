@@ -1,13 +1,13 @@
 export type Revision = {
   id: string;
   revisionNumber: number;
+  title: string;
   content: string;
   createdAt: string;
 };
 
 export type Document = {
   id: string;
-  title: string;
   createdAt: string;
   updatedAt: string;
   latestRevision: Revision | null;
