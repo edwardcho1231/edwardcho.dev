@@ -136,7 +136,7 @@ export default function DocumentsPage() {
           <p className="text-sm text-[var(--app-muted)]">
             {isEditing
               ? "You are updating the selected document. Save creates a new revision."
-              : "Write a title and markdown content, then publish when ready."}
+              : "Write a title and markdown content, then save when ready."}
           </p>
         </CardHeader>
 

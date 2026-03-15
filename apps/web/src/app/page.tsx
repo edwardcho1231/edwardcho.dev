@@ -7,9 +7,9 @@ export default function Home() {
         <p className="text-xs font-medium tracking-[0.28em] text-[var(--app-muted)] uppercase">
           Senior Software Engineer
         </p>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="text-sm font-medium text-[var(--app-muted)]">Edward Cho</h2>
-          <span className="flex items-center gap-2 mr-16">
+          <span className="flex items-center gap-2">
             <a
               href="https://github.com/edwardcho1231"
               target="_blank"
@@ -48,29 +48,36 @@ export default function Home() {
           I build reliable, elegant systems and products that scale with people.
         </h1>
         <p className="max-w-2xl text-lg leading-8 text-[var(--app-muted)]">
-          I&apos;m a principal-minded software engineer focused on product
-          architecture, practical execution, and clarity. I care most about
-          turning ambiguity into shipping software people can trust.
+          This site is my technical portfolio: real architecture, practical UX, and
+          shipping-oriented product iteration.
         </p>
       </section>
-      <section className="mt-16 pt-8">
-        <p className="text-sm font-medium text-[var(--app-muted)] uppercase tracking-[0.16em]">
-          Project
+
+      <section className="mt-12 rounded-lg border border-[var(--app-border)] bg-[var(--app-surface)]/50 p-5">
+        <p className="text-sm font-medium uppercase tracking-[0.16em] text-[var(--app-muted)]">
+          Project Snapshot
         </p>
-        <h2 className="mt-3 text-xl font-semibold">
-          This site is both a personal portfolio and an experimentation ground for a
-          document collaboration workflow.
+        <h2 className="mt-3 text-2xl font-semibold">
+          DocRev is a portfolio product and engineering sandbox.
         </h2>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--app-muted)]">
-          I&apos;m building a focused document platform with Clerk-authenticated access,
-          document versioning, and a clean interface you can evolve over time.
+        <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--app-muted)]">
+          It demonstrates auth-gated workflows, markdown rendering, and API-backed
+          content management.
         </p>
-        <Link
-          href="/documents"
-          className="mt-5 inline-block text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)] transition-colors hover:text-[var(--app-link-hover)]"
-        >
-          See documents page
-        </Link>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link
+            href="/project/docrev"
+            className="inline-flex rounded border border-[var(--app-border)] bg-white px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-foreground)] transition-colors hover:border-[var(--app-link-hover)] hover:text-[var(--app-link-hover)]"
+          >
+            Project details
+          </Link>
+          <Link
+            href="/documents"
+            className="inline-flex rounded border border-[var(--app-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)] transition-colors hover:border-[var(--app-link-hover)] hover:text-[var(--app-link-hover)]"
+          >
+            Open documents workspace
+          </Link>
+        </div>
       </section>
     </main>
   );
