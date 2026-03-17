@@ -6,6 +6,10 @@ export type Revision = {
   createdAt: string;
 };
 
+export type RevisionsResponse = {
+  revisions: Revision[];
+};
+
 export type Document = {
   id: string;
   createdAt: string;

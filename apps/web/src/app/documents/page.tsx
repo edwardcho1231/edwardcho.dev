@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { type CreateDocumentPayload, type Document } from "./types";
 import { createDocument, deleteDocument, fetchDocuments, updateDocument } from "./services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,7 @@ export default function DocumentsPage() {
   const [editorDocument, setEditorDocument] = useState<Document | null>(null);
   const [activeAction, setActiveAction] = useState<ActiveAction>({ kind: "none" });
   const { isLoaded, isSignedIn } = useAuth();
+  const router = useRouter();
   const hasActiveUserSession = isSignedIn === true;
 
   const loadDocuments = useCallback(async () => {
@@ -126,6 +128,10 @@ export default function DocumentsPage() {
     }
   };
 
+  const handleViewRevisions = (documentId: string) => {
+    router.push(`/documents/${encodeURIComponent(documentId)}/revisions`);
+  };
+
   return (
     <main className="mx-auto max-w-7xl px-6 py-16">
       <h1 className="text-4xl font-semibold">Documents</h1>
@@ -178,6 +184,7 @@ export default function DocumentsPage() {
                   isDeleting={isDeleting}
                   onEdit={handleEdit}
                   onDelete={handleDelete}
+                  onOpenRevisions={handleViewRevisions}
                 />
               );
             })}

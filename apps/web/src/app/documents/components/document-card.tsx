@@ -26,6 +26,7 @@ type DocumentCardProps = {
   isDeleting: boolean;
   onEdit: (document: Document) => void;
   onDelete: (documentId: string) => void;
+  onOpenRevisions: (documentId: string) => void;
 };
 
 export function DocumentCard({
@@ -34,6 +35,7 @@ export function DocumentCard({
   isDeleting,
   onEdit,
   onDelete,
+  onOpenRevisions,
 }: DocumentCardProps) {
   const updated = new Date(document.updatedAt);
   const preview = document.latestRevision?.content ?? "";
@@ -47,6 +49,15 @@ export function DocumentCard({
           <div className="flex items-center justify-between">
             <p className="text-lg font-medium">{documentTitle}</p>
             <div className="flex gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={isMutating}
+                onClick={() => onOpenRevisions(document.id)}
+              >
+                Revisions
+              </Button>
               <Button
                 type="button"
                 size="sm"
