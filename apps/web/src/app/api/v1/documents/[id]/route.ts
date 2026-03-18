@@ -12,7 +12,7 @@ const updateDocumentSchema = z.object({
 });
 
 const documentIdSchema = z.object({
-  id: z.string().uuid("Invalid document ID"),
+  id: z.uuid("Invalid document ID"),
 });
 
 type DocumentParams = { params: { id: string } | Promise<{ id: string }> };
@@ -40,6 +40,18 @@ function invalidDocumentIdResponse() {
       error: { code: "INVALID_DOCUMENT_ID", message: "Invalid document ID" },
     },
     { status: 400 },
+  );
+}
+
+function internalServerErrorResponse(message = "Internal server error") {
+  return NextResponse.json(
+    {
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message,
+      },
+    },
+    { status: 500 },
   );
 }
 
@@ -91,42 +103,47 @@ export async function PUT(request: Request, context: DocumentParams) {
   const { title, content } = parsedPayload.data;
   const { id } = parsedId.data;
 
-  const updated = await prisma.$transaction(async (tx) => {
-    const document = await tx.document.findFirst({
-      where: { id, ownerId: userId },
-      include: { latestRevision: true },
+  try {
+    const updated = await prisma.$transaction(async (tx) => {
+      const document = await tx.document.findFirst({
+        where: { id, ownerId: userId },
+        include: { latestRevision: true },
+      });
+
+      if (!document) {
+        return null;
+      }
+
+      const nextRevisionNumber = document.latestRevision?.revisionNumber
+        ? document.latestRevision.revisionNumber + 1
+        : 1;
+
+      const revision = await tx.revision.create({
+        data: {
+          documentId: document.id,
+          revisionNumber: nextRevisionNumber,
+          title,
+          content,
+          createdBy: userId,
+        },
+      });
+
+      return tx.document.update({
+        where: { id: document.id },
+        data: { latestRevisionId: revision.id },
+        include: { latestRevision: true },
+      });
     });
 
-    if (!document) {
-      return null;
+    if (!updated) {
+      return notFoundResponse();
     }
 
-    const nextRevisionNumber = document.latestRevision?.revisionNumber
-      ? document.latestRevision.revisionNumber + 1
-      : 1;
-
-    const revision = await tx.revision.create({
-      data: {
-        documentId: document.id,
-        revisionNumber: nextRevisionNumber,
-        title,
-        content,
-        createdBy: userId,
-      },
-    });
-
-    return tx.document.update({
-      where: { id: document.id },
-      data: { latestRevisionId: revision.id },
-      include: { latestRevision: true },
-    });
-  });
-
-  if (!updated) {
-    return notFoundResponse();
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error(`Failed to update document ${id}`, error);
+    return internalServerErrorResponse("Failed to update document");
   }
-
-  return NextResponse.json(updated);
 }
 
 export async function DELETE(_request: Request, context: DocumentParams) {
@@ -142,13 +159,18 @@ export async function DELETE(_request: Request, context: DocumentParams) {
     return invalidDocumentIdResponse();
   }
 
-  const deleted = await prisma.document.deleteMany({
-    where: { id: parsedId.data.id, ownerId: userId },
-  });
+  try {
+    const deleted = await prisma.document.deleteMany({
+      where: { id: parsedId.data.id, ownerId: userId },
+    });
 
-  if (deleted.count === 0) {
-    return notFoundResponse();
+    if (deleted.count === 0) {
+      return notFoundResponse();
+    }
+
+    return new Response(null, { status: 204 });
+  } catch (error) {
+    console.error(`Failed to delete document ${parsedId.data.id}`, error);
+    return internalServerErrorResponse("Failed to delete document");
   }
-
-  return new Response(null, { status: 204 });
 }

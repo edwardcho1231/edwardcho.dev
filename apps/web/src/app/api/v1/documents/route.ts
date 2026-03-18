@@ -32,6 +32,18 @@ function invalidDocumentDataResponse() {
   );
 }
 
+function internalServerErrorResponse(message = "Internal server error") {
+  return NextResponse.json(
+    {
+      error: {
+        code: "INTERNAL_SERVER_ERROR",
+        message,
+      },
+    },
+    { status: 500 },
+  );
+}
+
 export async function GET() {
   const { userId } = await auth();
 
@@ -42,7 +54,7 @@ export async function GET() {
   const documents = await prisma.document.findMany({
     where: { ownerId: userId },
     include: { latestRevision: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: { updatedAt: "desc" },
   });
 
   return NextResponse.json({ userId, documents });
@@ -71,29 +83,34 @@ export async function POST(request: Request) {
 
   const { title, content } = parsed.data;
 
-  const created = await prisma.$transaction(async (tx) => {
-    const document = await tx.document.create({
-      data: {
-        ownerId: userId,
-      },
+  try {
+    const created = await prisma.$transaction(async (tx) => {
+      const document = await tx.document.create({
+        data: {
+          ownerId: userId,
+        },
+      });
+
+      const revision = await tx.revision.create({
+        data: {
+          documentId: document.id,
+          revisionNumber: 1,
+          title,
+          content,
+          createdBy: userId,
+        },
+      });
+
+      return tx.document.update({
+        where: { id: document.id },
+        data: { latestRevisionId: revision.id },
+        include: { latestRevision: true },
+      });
     });
 
-    const revision = await tx.revision.create({
-      data: {
-        documentId: document.id,
-        revisionNumber: 1,
-        title,
-        content,
-        createdBy: userId,
-      },
-    });
-
-    return tx.document.update({
-      where: { id: document.id },
-      data: { latestRevisionId: revision.id },
-      include: { latestRevision: true },
-    });
-  });
-
-  return NextResponse.json(created, { status: 201 });
+    return NextResponse.json(created, { status: 201 });
+  } catch (error) {
+    console.error("Failed to create document", error);
+    return internalServerErrorResponse("Failed to create document");
+  }
 }
