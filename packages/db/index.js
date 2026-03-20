@@ -24,6 +24,11 @@ function ensureRootCert() {
   }
 
   process.env.PGSSLROOTCERT = certPath;
+
+  if (process.env.SSL_DEBUG === "1") {
+    const exists = fs.existsSync(certPath);
+    console.log(`[db] PGSSLROOTCERT set to ${certPath} (exists=${exists})`);
+  }
 }
 
 if (!process.env.DATABASE_URL) {
