@@ -44,6 +44,7 @@ apps/
 packages/
   db/       Prisma schema, migrations, and generated client package for PostgreSQL
   types/    Shared TypeScript types
+```
 
 ## Quickstart
 
@@ -78,5 +79,11 @@ From repo root:
 - `pnpm lint` runs available `lint` tasks (currently `apps/web`)
 - `pnpm check-types` runs type checking tasks
 - `pnpm test` runs `apps/web` Vitest tests
+- `pnpm verify` runs lint + tests
 - `pnpm format` formats `*.ts`, `*.tsx`, `*.md`
 - `pnpm build` runs package `build` tasks
+
+## Quality Gate
+
+- `git push` runs `pnpm verify` through Husky `pre-push`.
+- You can run the same checks manually with `pnpm verify`.
