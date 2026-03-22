@@ -45,37 +45,34 @@ export default function Home() {
           </span>
         </div>
         <h1 className="text-4xl font-semibold leading-[1.05] text-[var(--app-foreground)] sm:text-6xl">
-          I build reliable, elegant systems and products that scale with people.
+          I build reliable software products and systems shaped by real tradeoffs.
         </h1>
         <p className="max-w-2xl text-lg leading-8 text-[var(--app-muted)]">
-          This site is my technical portfolio: real architecture, practical UX, and
-          shipping-oriented product iteration.
+          This portfolio shows how I turn product requirements into maintainable systems, workflows, and public-facing software.
         </p>
       </section>
 
       <section className="mt-12 rounded-lg border border-[var(--app-border)] bg-[var(--app-surface)]/50 p-5">
         <p className="text-sm font-medium uppercase tracking-[0.16em] text-[var(--app-muted)]">
-          Project Snapshot
+          PROJECT SNAPSHOT
         </p>
         <h2 className="mt-3 text-2xl font-semibold">
-          edwardcho.dev is a portfolio product and engineering sandbox.
+            edwardcho.dev is a portfolio platform and private publishing workbench.
         </h2>
         <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--app-muted)]">
-          It demonstrates auth-gated workflows, markdown rendering, and API-backed
-          content management.
-        </p>
-        <div className="mt-6 flex flex-wrap gap-3">
+          It demonstrates how I design revision-aware content workflows, authenticated editing surfaces, and API-backed publishing systems for public delivery.        </p>
+        <div className="mt-6">
           <Link
             href="/project/edwardcho.dev"
-            className="inline-flex rounded border border-[var(--app-border)] bg-white px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-foreground)] transition-colors hover:border-[var(--app-link-hover)] hover:text-[var(--app-link-hover)]"
+            className="inline-flex rounded border border-[var(--app-border)] bg-white px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-foreground)] transition-colors hover:border-[var(--app-link-hover)] hover:text-[var(--app-link-hover)] mr-3 "
           >
-            Project details
+            Read Case Study
           </Link>
           <Link
             href="/documents"
             className="inline-flex rounded border border-[var(--app-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)] transition-colors hover:border-[var(--app-link-hover)] hover:text-[var(--app-link-hover)]"
           >
-            Open documents workspace
+            Explore Editor Lab
           </Link>
         </div>
       </section>
