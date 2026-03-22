@@ -18,6 +18,7 @@ This repository is the edwardcho.dev monorepo.
 - Avoid reverting unrelated changes.
 - Use existing monorepo tooling and scripts.
 - Favor quick and synchronous fixes over over-exploration.
+- If a fix can be implemented directly, do it rather than only describing it.
 
 ## File Access & Tooling Constraints
 - Use `rg` for file searching instead of `grep`.
@@ -45,6 +46,30 @@ This repository is the edwardcho.dev monorepo.
 ## Communication Style
 - Be concise, practical, and explicit with outcomes.
 - Prioritize fixing the requested behavior, then suggest optional follow-ups.
+
+## General Operating Principles
+- Source of truth:
+  - Treat code and runtime behavior as the source of truth when docs and implementation diverge.
+  - Update docs to match current implementation as part of the change.
+- Single ownership per concern:
+  - Keep one canonical location per topic (overview, app behavior, database setup, API details).
+  - Prefer linking to the canonical location over duplicating content.
+- Consistency over preference:
+  - Follow existing naming, structure, and repository conventions unless there is a strong reason to change.
+- Small, reversible changes:
+  - Prefer incremental edits that are easy to review, reason about, and roll back.
+- Verify before finalizing:
+  - Confirm key assumptions with quick checks before reporting completion.
+- Environment-aware guidance:
+  - Keep setup and operational guidance portable across environments.
+  - Avoid machine-specific details in committed docs and instructions.
+- Explicit scope control:
+  - Keep work within requested scope unless an adjacent change is necessary for correctness.
+- Decision traceability:
+  - Briefly document important tradeoffs so future maintainers understand why a choice was made.
+- Security and secrets hygiene:
+  - Never commit secrets or sensitive credentials.
+  - Avoid exposing unnecessary sensitive operational details in docs.
 
 ## Engineering & Delivery Principles
 - Always provide a solution-oriented answer to the user’s problem rather than only listing possibilities.
