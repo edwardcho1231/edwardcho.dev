@@ -148,6 +148,7 @@ export default function DocumentsPage() {
 
         <CardContent className="space-y-4">
           <DocumentEditor
+            key={editorDocument?.id ?? "new"}
             canSubmit={isLoaded && hasActiveUserSession}
             isBusy={isMutating}
             isSubmitting={submitting}
