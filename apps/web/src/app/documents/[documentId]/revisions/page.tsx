@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,12 +39,10 @@ function RevisionListItem({
 }
 
 export default function DocumentRevisionsPage() {
-  const { isLoaded, isSignedIn } = useAuth();
   const params = useParams<{ documentId?: string | string[] }>();
   const documentId = Array.isArray(params.documentId)
     ? params.documentId[0]
     : params.documentId;
-  const hasActiveUserSession = isSignedIn === true;
   const [revisions, setRevisions] = useState<Revision[]>([]);
   const [selectedRevision, setSelectedRevision] = useState<Revision | null>(null);
   const [loading, setLoading] = useState(false);
@@ -78,19 +75,8 @@ export default function DocumentRevisionsPage() {
   }, [documentId]);
 
   useEffect(() => {
-    if (!isLoaded) {
-      return;
-    }
-
-    if (!hasActiveUserSession) {
-      setError(null);
-      setRevisions([]);
-      setSelectedRevision(null);
-      return;
-    }
-
     loadRevisions();
-  }, [isLoaded, hasActiveUserSession, loadRevisions]);
+  }, [loadRevisions]);
 
   const hasRevisions = revisions.length > 0;
   const selectedRevisionTitle = useMemo(
@@ -111,14 +97,8 @@ export default function DocumentRevisionsPage() {
         </div>
       </div>
 
-      {!isLoaded ? <p className="mt-6 text-sm text-[var(--app-muted)]">Checking authentication…</p> : null}
-      {isLoaded && !hasActiveUserSession ? (
-        <p className="mt-6 text-sm text-[var(--app-muted)]">Sign in to view revisions.</p>
-      ) : null}
-
       {error ? <p className="mt-6 text-sm text-red-600">{error}</p> : null}
 
-      {isLoaded && hasActiveUserSession ? (
       <section className="mt-8 grid gap-4 grid-cols-1 lg:grid-cols-2">
           <Card className="h-fit">
             <CardContent className="space-y-4 p-4">
@@ -157,14 +137,14 @@ export default function DocumentRevisionsPage() {
                   </div>
                   <MarkdownPreview content={selectedRevision.content} className="text-sm" />
                   <div className="pt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setSelectedRevision(null)}
-                  disabled={!selectedRevision}
-                >
-                  Clear selection
-                </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setSelectedRevision(null)}
+                      disabled={!selectedRevision}
+                    >
+                      Clear selection
+                    </Button>
                   </div>
                 </>
               ) : (
@@ -175,7 +155,6 @@ export default function DocumentRevisionsPage() {
             </CardContent>
           </Card>
         </section>
-      ) : null}
     </main>
   );
 }

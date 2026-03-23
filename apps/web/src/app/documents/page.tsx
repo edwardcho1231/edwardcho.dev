@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { type CreateDocumentPayload, type Document } from "./types";
 import { createDocument, deleteDocument, fetchDocuments, updateDocument } from "./services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DocumentCard } from "./components/document-card";
 import { DocumentEditor } from "./components/document-editor";
+
 export default function DocumentsPage() {
   type ActiveAction =
     | { kind: "none" }
@@ -19,9 +19,7 @@ export default function DocumentsPage() {
   const [error, setError] = useState<string | null>(null);
   const [editorDocument, setEditorDocument] = useState<Document | null>(null);
   const [activeAction, setActiveAction] = useState<ActiveAction>({ kind: "none" });
-  const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
-  const hasActiveUserSession = isSignedIn === true;
 
   const loadDocuments = useCallback(async () => {
     setLoading(true);
@@ -38,20 +36,8 @@ export default function DocumentsPage() {
   }, []);
 
   useEffect(() => {
-    if (!isLoaded) {
-      return;
-    }
-
-    if (!hasActiveUserSession) {
-      setLoading(false);
-      setDocuments([]);
-      setError(null);
-      clearEditor();
-      return;
-    }
-
     loadDocuments();
-  }, [isLoaded, hasActiveUserSession, loadDocuments]);
+  }, [loadDocuments]);
 
   const isEditing = editorDocument !== null;
   const isMutating = submitting || activeAction.kind === "deleting";
@@ -107,11 +93,6 @@ export default function DocumentsPage() {
       return;
     }
 
-    if (!hasActiveUserSession) {
-      setError("Please sign in to delete documents.");
-      return;
-    }
-
     setActiveAction({ kind: "deleting", documentId });
     setError(null);
 
@@ -149,7 +130,7 @@ export default function DocumentsPage() {
         <CardContent className="space-y-4">
           <DocumentEditor
             key={editorDocument?.id ?? "new"}
-            canSubmit={isLoaded && hasActiveUserSession}
+            canSubmit
             isBusy={isMutating}
             isSubmitting={submitting}
             editorDocument={editorDocument}
@@ -166,10 +147,7 @@ export default function DocumentsPage() {
         </h2>
 
         {error && !isEditing ? <p className="text-sm text-red-600">{error}</p> : null}
-        {!isLoaded ? <p className="text-sm text-[var(--app-muted)]">Checking authentication…</p> : null}
-        {isLoaded && !hasActiveUserSession ? (
-          <p className="text-sm text-[var(--app-muted)]">Sign in to view and manage your documents.</p>
-        ) : loading ? (
+        {loading ? (
           <p className="text-sm text-[var(--app-muted)]">Loading documents...</p>
         ) : documents.length === 0 ? (
           <p className="text-sm text-[var(--app-muted)]">No documents yet. Create one above.</p>
