@@ -6,18 +6,34 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum DocumentKind {
+  BLOG
+  PROJECT
+}
+
+enum DocumentStatus {
+  DRAFT
+  PUBLISHED
+}
+
 model Document {
-  id               String     @id @default(dbgenerated("gen_random_uuid()::text"))
+  id               String         @id @default(dbgenerated("gen_random_uuid()::text"))
   ownerId          String
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @default(now()) @updatedAt
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now()) @updatedAt
+  kind             DocumentKind?
+  status           DocumentStatus @default(DRAFT)
+  slug             String?
+  excerpt          String?
+  publishedAt      DateTime?
 
-  latestRevisionId String?    @unique
-  latestRevision   Revision?  @relation("LatestRevision", fields: [id, latestRevisionId], references: [documentId, id])
+  latestRevisionId String?         @unique
+  latestRevision   Revision?       @relation("LatestRevision", fields: [id, latestRevisionId], references: [documentId, id])
 
-  revisions        Revision[] @relation("DocumentRevisions")
+  revisions        Revision[]      @relation("DocumentRevisions")
 
   @@index([ownerId])
+  @@index([status, kind, publishedAt])
   @@unique([id, latestRevisionId])
 }
 
