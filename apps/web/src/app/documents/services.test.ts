@@ -4,6 +4,8 @@ import {
   deleteDocument,
   fetchDocumentRevisions,
   fetchDocuments,
+  publishDocument,
+  unpublishDocument,
   updateDocument,
 } from "./services";
 
@@ -28,18 +30,28 @@ afterEach(() => {
 
 describe("document services", () => {
   it("fetchDocuments calls documents endpoint and returns list", async () => {
-    const documents = [
-      {
-        id: "doc-1",
-        createdAt: "2026-01-01T00:00:00.000Z",
-        updatedAt: "2026-01-02T00:00:00.000Z",
-        latestRevision: null,
-      },
-    ];
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ documents }));
+    const documentsPayload = {
+      userId: "user_123",
+      isPublisher: true,
+      documents: [
+        {
+          id: "doc-1",
+          ownerId: "user_123",
+          createdAt: "2026-01-01T00:00:00.000Z",
+          updatedAt: "2026-01-02T00:00:00.000Z",
+          kind: null,
+          status: "DRAFT",
+          slug: null,
+          excerpt: null,
+          publishedAt: null,
+          latestRevision: null,
+        },
+      ],
+    };
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse(documentsPayload));
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(fetchDocuments()).resolves.toEqual(documents);
+    await expect(fetchDocuments()).resolves.toEqual(documentsPayload);
     expect(fetchMock).toHaveBeenCalledWith(
       "/api/v1/documents",
       expect.objectContaining({
@@ -54,8 +66,14 @@ describe("document services", () => {
     const fetchMock = vi.fn().mockResolvedValue(
       jsonResponse({
         id: "doc/with space?",
+        ownerId: "user_123",
         createdAt: "2026-01-01T00:00:00.000Z",
         updatedAt: "2026-01-01T00:00:00.000Z",
+        kind: null,
+        status: "DRAFT",
+        slug: null,
+        excerpt: null,
+        publishedAt: null,
         latestRevision: null,
       }),
     );
@@ -65,6 +83,60 @@ describe("document services", () => {
     expect(fetchMock).toHaveBeenCalledWith(
       `/api/v1/documents/${encodedId}`,
       expect.objectContaining({ method: "PUT" }),
+    );
+  });
+
+  it("publishDocument URL-encodes document id", async () => {
+    const encodedId = "doc%2Fwith%20space%3F";
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse({
+        id: "doc/with space?",
+        ownerId: "user_123",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        updatedAt: "2026-01-01T00:00:00.000Z",
+        kind: "BLOG",
+        status: "PUBLISHED",
+        slug: "my-slug",
+        excerpt: "excerpt",
+        publishedAt: "2026-01-01T00:00:00.000Z",
+        latestRevision: null,
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await publishDocument("doc/with space?", {
+      kind: "BLOG",
+      slug: "my-slug",
+      excerpt: "excerpt",
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      `/api/v1/documents/${encodedId}/publish`,
+      expect.objectContaining({ method: "PATCH" }),
+    );
+  });
+
+  it("unpublishDocument URL-encodes document id", async () => {
+    const encodedId = "doc%2Fwith%20space%3F";
+    const fetchMock = vi.fn().mockResolvedValue(
+      jsonResponse({
+        id: "doc/with space?",
+        ownerId: "user_123",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        updatedAt: "2026-01-01T00:00:00.000Z",
+        kind: "BLOG",
+        status: "DRAFT",
+        slug: "my-slug",
+        excerpt: "excerpt",
+        publishedAt: "2026-01-01T00:00:00.000Z",
+        latestRevision: null,
+      }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    await unpublishDocument("doc/with space?");
+    expect(fetchMock).toHaveBeenCalledWith(
+      `/api/v1/documents/${encodedId}/unpublish`,
+      expect.objectContaining({ method: "PATCH" }),
     );
   });
 

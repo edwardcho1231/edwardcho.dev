@@ -1,10 +1,13 @@
 import {
   type CreateDocumentPayload,
-  type DocumentsResponse,
-  type Document,
-  type RevisionsResponse,
+  type PublishDocumentPayload,
   type UpdateDocumentPayload,
-} from "./types";
+} from "./payload-types";
+import {
+  type DocumentsResponseDto,
+  type DocumentDto,
+  type DocumentRevisionsResponseDto,
+} from "@/types/documents";
 
 type ApiError = {
   error?: {
@@ -39,16 +42,14 @@ async function requestWithApi<T>(input: string, init: RequestInit): Promise<T> {
   return payload as T;
 }
 
-export async function fetchDocuments(): Promise<Document[]> {
-  const payload = await requestWithApi<DocumentsResponse>("documents", {
+export async function fetchDocuments(): Promise<DocumentsResponseDto> {
+  return requestWithApi<DocumentsResponseDto>("documents", {
     method: "GET",
   });
-
-  return payload.documents;
 }
 
-export async function createDocument(payload: CreateDocumentPayload): Promise<Document> {
-  return requestWithApi<Document>("documents", {
+export async function createDocument(payload: CreateDocumentPayload): Promise<DocumentDto> {
+  return requestWithApi<DocumentDto>("documents", {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -57,8 +58,8 @@ export async function createDocument(payload: CreateDocumentPayload): Promise<Do
 export async function updateDocument(
   documentId: string,
   payload: UpdateDocumentPayload,
-): Promise<Document> {
-  return requestWithApi<Document>(`documents/${encodeURIComponent(documentId)}`, {
+): Promise<DocumentDto> {
+  return requestWithApi<DocumentDto>(`documents/${encodeURIComponent(documentId)}`, {
     method: "PUT",
     body: JSON.stringify(payload),
   });
@@ -70,8 +71,10 @@ export async function deleteDocument(documentId: string): Promise<void> {
   });
 }
 
-export async function fetchDocumentRevisions(documentId: string): Promise<RevisionsResponse["revisions"]> {
-  const payload = await requestWithApi<RevisionsResponse>(
+export async function fetchDocumentRevisions(
+  documentId: string,
+): Promise<DocumentRevisionsResponseDto["revisions"]> {
+  const payload = await requestWithApi<DocumentRevisionsResponseDto>(
     `revisions?documentId=${encodeURIComponent(documentId)}`,
     {
       method: "GET",
@@ -79,4 +82,20 @@ export async function fetchDocumentRevisions(documentId: string): Promise<Revisi
   );
 
   return payload.revisions;
+}
+
+export async function publishDocument(
+  documentId: string,
+  payload: PublishDocumentPayload,
+): Promise<DocumentDto> {
+  return requestWithApi<DocumentDto>(`documents/${encodeURIComponent(documentId)}/publish`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function unpublishDocument(documentId: string): Promise<DocumentDto> {
+  return requestWithApi<DocumentDto>(`documents/${encodeURIComponent(documentId)}/unpublish`, {
+    method: "PATCH",
+  });
 }
