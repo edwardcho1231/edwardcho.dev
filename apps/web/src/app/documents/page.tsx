@@ -2,23 +2,41 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { type CreateDocumentPayload, type Document } from "./types";
-import { createDocument, deleteDocument, fetchDocuments, updateDocument } from "./services";
+import { type DocumentDto } from "@/types/documents";
+import {
+  createDocument,
+  deleteDocument,
+  fetchDocuments,
+  publishDocument,
+  unpublishDocument,
+  updateDocument,
+} from "./services";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DocumentCard } from "./components/document-card";
 import { DocumentEditor } from "./components/document-editor";
+import { type CreateDocumentPayload, type PublishDocumentPayload } from "./payload-types";
+
+const ACTIVE_ACTION_KIND = {
+  NONE: "none",
+  DELETING: "deleting",
+  PUBLISHING: "publishing",
+  UNPUBLISHING: "unpublishing",
+} as const;
 
 export default function DocumentsPage() {
   type ActiveAction =
-    | { kind: "none" }
-    | { kind: "deleting"; documentId: string };
+    | { kind: typeof ACTIVE_ACTION_KIND.NONE }
+    | { kind: typeof ACTIVE_ACTION_KIND.DELETING; documentId: string }
+    | { kind: typeof ACTIVE_ACTION_KIND.PUBLISHING; documentId: string }
+    | { kind: typeof ACTIVE_ACTION_KIND.UNPUBLISHING; documentId: string };
 
-  const [documents, setDocuments] = useState<Document[]>([]);
+  const [documents, setDocuments] = useState<DocumentDto[]>([]);
+  const [isPublisher, setIsPublisher] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [editorDocument, setEditorDocument] = useState<Document | null>(null);
-  const [activeAction, setActiveAction] = useState<ActiveAction>({ kind: "none" });
+  const [editorDocument, setEditorDocument] = useState<DocumentDto | null>(null);
+  const [activeAction, setActiveAction] = useState<ActiveAction>({ kind: ACTIVE_ACTION_KIND.NONE });
   const router = useRouter();
 
   const loadDocuments = useCallback(async () => {
@@ -26,8 +44,9 @@ export default function DocumentsPage() {
     setError(null);
 
     try {
-      const documents = await fetchDocuments();
-      setDocuments(documents);
+      const payload = await fetchDocuments();
+      setDocuments(payload.documents);
+      setIsPublisher(payload.isPublisher);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load documents");
     } finally {
@@ -40,10 +59,15 @@ export default function DocumentsPage() {
   }, [loadDocuments]);
 
   const isEditing = editorDocument !== null;
-  const isMutating = submitting || activeAction.kind === "deleting";
+  const isMutating = submitting || activeAction.kind !== ACTIVE_ACTION_KIND.NONE;
   const clearEditor = () => {
     setEditorDocument(null);
     setError(null);
+  };
+
+  const syncDocument = (next: DocumentDto) => {
+    setDocuments((previous) => previous.map((document) => (document.id === next.id ? next : document)));
+    setEditorDocument((previous) => (previous?.id === next.id ? next : previous));
   };
 
   const handleSubmitDocument = async (
@@ -56,9 +80,7 @@ export default function DocumentsPage() {
     try {
       if (documentId) {
         const updated = await updateDocument(documentId, payload);
-        setDocuments((previous) =>
-          previous.map((document) => (document.id === updated.id ? updated : document)),
-        );
+        syncDocument(updated);
         clearEditor();
         return true;
       }
@@ -75,7 +97,7 @@ export default function DocumentsPage() {
     }
   };
 
-  const handleEdit = (document: Document) => {
+  const handleEdit = (document: DocumentDto) => {
     if (isMutating) {
       return;
     }
@@ -93,7 +115,7 @@ export default function DocumentsPage() {
       return;
     }
 
-    setActiveAction({ kind: "deleting", documentId });
+    setActiveAction({ kind: ACTIVE_ACTION_KIND.DELETING, documentId });
     setError(null);
 
     try {
@@ -105,7 +127,47 @@ export default function DocumentsPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete document");
     } finally {
-      setActiveAction({ kind: "none" });
+      setActiveAction({ kind: ACTIVE_ACTION_KIND.NONE });
+    }
+  };
+
+  const handlePublish = async (documentId: string, payload: PublishDocumentPayload) => {
+    if (isMutating) {
+      return false;
+    }
+
+    setActiveAction({ kind: ACTIVE_ACTION_KIND.PUBLISHING, documentId });
+    setError(null);
+
+    try {
+      const updated = await publishDocument(documentId, payload);
+      syncDocument(updated);
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to publish document");
+      return false;
+    } finally {
+      setActiveAction({ kind: ACTIVE_ACTION_KIND.NONE });
+    }
+  };
+
+  const handleUnpublish = async (documentId: string) => {
+    if (isMutating) {
+      return false;
+    }
+
+    setActiveAction({ kind: ACTIVE_ACTION_KIND.UNPUBLISHING, documentId });
+    setError(null);
+
+    try {
+      const updated = await unpublishDocument(documentId);
+      syncDocument(updated);
+      return true;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to unpublish document");
+      return false;
+    } finally {
+      setActiveAction({ kind: ACTIVE_ACTION_KIND.NONE });
     }
   };
 
@@ -133,9 +195,14 @@ export default function DocumentsPage() {
             canSubmit
             isBusy={isMutating}
             isSubmitting={submitting}
+            isPublishing={activeAction.kind === ACTIVE_ACTION_KIND.PUBLISHING}
+            isUnpublishing={activeAction.kind === ACTIVE_ACTION_KIND.UNPUBLISHING}
+            isPublisher={isPublisher}
             editorDocument={editorDocument}
             error={error}
             onSubmitDocument={handleSubmitDocument}
+            onPublishDocument={handlePublish}
+            onUnpublishDocument={handleUnpublish}
             onCancelEdit={handleCancelEdit}
           />
         </CardContent>
@@ -154,7 +221,9 @@ export default function DocumentsPage() {
         ) : (
           <ul className="space-y-3">
             {documents.map((document) => {
-              const isDeleting = activeAction.kind === "deleting" && activeAction.documentId === document.id;
+              const isDeleting =
+                activeAction.kind === ACTIVE_ACTION_KIND.DELETING &&
+                activeAction.documentId === document.id;
               return (
                 <DocumentCard
                   key={document.id}
