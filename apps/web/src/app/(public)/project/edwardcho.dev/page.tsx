@@ -171,11 +171,12 @@ export default function ProjectEdwardChoDevPage() {
         </p>
         <ol className="mt-3 list-decimal space-y-2 pl-6 text-sm leading-7 text-[var(--app-muted)]">
           <li>
-            Add a publish workflow that promotes selected editor-lab documents
-            into public writing.
+            Harden the publishing workflow with slug conflict guidance,
+            publish previews, and clearer status transitions.
           </li>
           <li>
-            Expand project and writing surfaces fed by the same content model.
+            Expand blog and project presentation templates while keeping one
+            shared content model.
           </li>
           <li>
             Improve revision tooling with comparison-focused views for faster
