@@ -8,7 +8,9 @@ export default function Home() {
           Senior Software Engineer
         </p>
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-sm font-medium text-[var(--app-muted)]">Edward Cho</h2>
+          <h2 className="text-sm font-medium text-[var(--app-muted)]">
+            Edward Cho
+          </h2>
           <span className="flex items-center gap-2">
             <a
               href="https://github.com/edwardcho1231"
@@ -45,10 +47,12 @@ export default function Home() {
           </span>
         </div>
         <h1 className="text-4xl font-semibold leading-[1.05] text-[var(--app-foreground)] sm:text-6xl">
-          I build reliable software products and systems shaped by real tradeoffs.
+          I build reliable software products and systems shaped by real
+          tradeoffs.
         </h1>
         <p className="max-w-2xl text-lg leading-8 text-[var(--app-muted)]">
-          This portfolio shows how I turn product requirements into maintainable systems, workflows, and public-facing software.
+          This portfolio shows how I turn product requirements into maintainable
+          systems, workflows, and public-facing software.
         </p>
       </section>
 
@@ -57,13 +61,17 @@ export default function Home() {
           PROJECT SNAPSHOT
         </p>
         <h2 className="mt-3 text-2xl font-semibold">
-            edwardcho.dev is a portfolio platform and private publishing workbench.
+          edwardcho.dev is a portfolio platform and private publishing
+          workbench.
         </h2>
         <p className="mt-3 max-w-2xl text-base leading-7 text-[var(--app-muted)]">
-          It demonstrates how I design revision-aware content workflows, authenticated editing surfaces, and API-backed publishing systems for public delivery.        </p>
+          It demonstrates how I design revision-aware content workflows,
+          authenticated editing surfaces, and API-backed publishing systems for
+          public delivery.
+        </p>
         <div className="mt-6">
           <Link
-            href="/project/edwardcho.dev"
+            href="/projects/edwardchodev-portfolio"
             className="inline-flex rounded border border-[var(--app-border)] bg-white px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-foreground)] transition-colors hover:border-[var(--app-link-hover)] hover:text-[var(--app-link-hover)] mr-3 "
           >
             Read Case Study

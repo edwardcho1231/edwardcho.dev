@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { MarkdownPreview } from "../../../documents/components/markdown-preview";
 import { getPublishedDocumentBySlug } from "@/lib/public-content";
 
@@ -13,6 +13,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const document = await getPublishedDocumentBySlug("PROJECT", decodeURIComponent(slug));
 
   if (!document || !document.latestRevision) {
+    if (slug === "edwardchodev-portfolio") {
+      redirect("/project/edwardcho.dev");
+    }
+
     notFound();
   }
 
