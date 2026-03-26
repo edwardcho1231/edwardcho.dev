@@ -26,7 +26,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
       <p className="mt-4 text-xs text-[var(--app-muted)]">
         Published {new Date(document.publishedAt ?? document.updatedAt).toLocaleDateString()}
       </p>
-      <article className="mt-8 rounded-md border border-[var(--app-border)] p-5">
+      <article className="mt-8">
         <MarkdownPreview content={document.latestRevision.content} className="text-base" />
       </article>
     </main>
