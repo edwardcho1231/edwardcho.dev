@@ -23,6 +23,73 @@ Today, the primary workflow is a private document workspace with markdown author
 - Next.js App Router and Route Handler backend patterns
 - Reusable UI built with Tailwind CSS and shadcn/ui
 
+## Architecture Diagrams
+
+### Document Editor Workflow
+
+```mermaid
+flowchart TD
+  A[Author] --> B["/documents editor UI"]
+  B --> C["Clerk auth gate"]
+  C --> D["GET /api/v1/documents"]
+  C --> E["POST /api/v1/documents"]
+  C --> F["PUT /api/v1/documents/:id"]
+  C --> G["GET /api/v1/revisions?documentId=..."]
+  C --> H["PATCH /api/v1/documents/:id/publish"]
+  C --> I["PATCH /api/v1/documents/:id/unpublish"]
+
+  D --> J["Prisma / PostgreSQL"]
+  E --> J
+  F --> J
+  G --> J
+  H --> J
+  I --> J
+
+  J --> K["Document table"]
+  J --> L["Revision table"]
+
+  E -- "create document + revision 1" --> K
+  E -- "create document + revision 1" --> L
+  F -- "save new revision" --> L
+  F -- "update latestRevisionId" --> K
+  G -- "load revision history" --> L
+  H -- "publish metadata" --> K
+  I -- "set status back to draft" --> K
+
+  K --> M["Public /projects/[slug]"]
+  L --> M
+  M -- "read published content via latestRevision" --> A
+```
+
+### Document / Revision Relationships
+
+```mermaid
+erDiagram
+  Document {
+    string id PK
+    string ownerId
+    string status
+    string kind
+    string slug
+    string excerpt
+    datetime publishedAt
+    string latestRevisionId FK
+  }
+
+  Revision {
+    string id PK
+    string documentId FK
+    int revisionNumber
+    string title
+    string content
+    string createdBy
+    datetime createdAt
+  }
+
+  Document ||--o{ Revision : "has many revisions"
+  Document o|--|| Revision : "latestRevisionId points to current revision"
+```
+
 ## Near-Term Roadmap
 
 - Draft-to-published workflow for turning editor documents into blog posts
