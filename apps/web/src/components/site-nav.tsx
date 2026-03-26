@@ -33,6 +33,12 @@ export function SiteNav({ showAuthControls = false }: SiteNavProps) {
             >
               Projects
             </Link>
+            <Link
+              href="/documents"
+              className="px-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)] transition-colors hover:text-[var(--app-link-hover)]"
+            >
+              Editor Lab
+            </Link>
           </div>
           {showAuthControls ? (
             <AuthNavControls />
