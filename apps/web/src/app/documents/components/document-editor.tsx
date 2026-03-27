@@ -2,11 +2,15 @@
 
 import { FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { type DocumentDto, type DocumentKind } from "@/types/documents";
-import { type CreateDocumentPayload, type PublishDocumentPayload } from "../payload-types";
+import {
+  type CreateDocumentPayload,
+  type PublishDocumentPayload,
+} from "../payload-types";
 import { DocumentEditorUI } from "./document-editor-ui";
 
 const MAX_CONTENT_LENGTH = 10000;
@@ -36,7 +40,10 @@ type DocumentEditorProps = {
     payload: CreateDocumentPayload,
     documentId?: string,
   ) => Promise<boolean>;
-  onPublishDocument: (documentId: string, payload: PublishDocumentPayload) => Promise<boolean>;
+  onPublishDocument: (
+    documentId: string,
+    payload: PublishDocumentPayload,
+  ) => Promise<boolean>;
   onUnpublishDocument: (documentId: string) => Promise<boolean>;
   onCancelEdit: () => void;
 };
@@ -55,10 +62,20 @@ export function DocumentEditor({
   onUnpublishDocument,
   onCancelEdit,
 }: DocumentEditorProps) {
-  const [title, setTitle] = useState(() => editorDocument?.latestRevision?.title ?? "");
-  const [content, setContent] = useState(() => editorDocument?.latestRevision?.content ?? "");
-  const [kind, setKind] = useState<DocumentKind>(editorDocument?.kind ?? "BLOG");
-  const [slug, setSlug] = useState(() => editorDocument?.slug ?? slugify(editorDocument?.latestRevision?.title ?? ""));
+  const [title, setTitle] = useState(
+    () => editorDocument?.latestRevision?.title ?? "",
+  );
+  const [content, setContent] = useState(
+    () => editorDocument?.latestRevision?.content ?? "",
+  );
+  const [kind, setKind] = useState<DocumentKind>(
+    editorDocument?.kind ?? "BLOG",
+  );
+  const [slug, setSlug] = useState(
+    () =>
+      editorDocument?.slug ??
+      slugify(editorDocument?.latestRevision?.title ?? ""),
+  );
   const [excerpt, setExcerpt] = useState(() => editorDocument?.excerpt ?? "");
 
   const isEditing = editorDocument !== null;
@@ -148,15 +165,14 @@ export function DocumentEditor({
             <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)]">
               Publishing
             </h3>
-            <span
-              className={`rounded border px-2 py-1 text-xs font-semibold ${
-                editorDocument.status === "PUBLISHED"
-                  ? "border-emerald-600/60 text-emerald-400"
-                  : "border-[var(--app-border)] text-[var(--app-muted)]"
-              }`}
+            <Badge
+              variant={
+                editorDocument.status === "PUBLISHED" ? "success" : "muted"
+              }
+              className="py-1 text-xs"
             >
               {editorDocument.status}
-            </span>
+            </Badge>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -166,7 +182,9 @@ export function DocumentEditor({
                 id="publish-kind"
                 className="h-9 w-full rounded-md border border-[var(--app-border)] bg-transparent px-3 text-sm"
                 value={kind}
-                onChange={(event) => setKind(event.target.value as DocumentKind)}
+                onChange={(event) =>
+                  setKind(event.target.value as DocumentKind)
+                }
                 disabled={isBusy}
               >
                 <option value="BLOG">Blog</option>
@@ -183,7 +201,9 @@ export function DocumentEditor({
                 disabled={isBusy}
               />
               {!isSlugValid && normalizedSlug.length > 0 ? (
-                <p className="text-xs text-red-600">Use lowercase letters, numbers, and single hyphens only.</p>
+                <p className="text-xs text-red-600">
+                  Use lowercase letters, numbers, and single hyphens only.
+                </p>
               ) : null}
             </div>
           </div>
@@ -205,10 +225,19 @@ export function DocumentEditor({
           </div>
 
           <div className="flex items-center gap-2">
-            <Button type="button" onClick={handlePublish} disabled={isPublishDisabled}>
+            <Button
+              type="button"
+              onClick={handlePublish}
+              disabled={isPublishDisabled}
+            >
               {isPublishing ? "Publishing..." : "Publish"}
             </Button>
-            <Button type="button" variant="outline" onClick={handleUnpublish} disabled={isBusy}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleUnpublish}
+              disabled={isBusy}
+            >
               {isUnpublishing ? "Unpublishing..." : "Unpublish"}
             </Button>
           </div>
