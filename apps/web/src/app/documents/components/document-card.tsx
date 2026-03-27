@@ -42,6 +42,8 @@ export function DocumentCard({
   const preview = document.latestRevision?.content ?? "";
   const fallback = plainTextSummary(preview, 190);
   const documentTitle = document.latestRevision?.title ?? "Untitled";
+  const isPublished = document.status === "PUBLISHED";
+  const isDeleteDisabled = isMutating || isPublished;
 
   return (
     <li>
@@ -50,10 +52,8 @@ export function DocumentCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <p className="text-lg font-medium">{documentTitle}</p>
-              <Badge
-                variant={document.status === "PUBLISHED" ? "success" : "muted"}
-              >
-                {document.status === "PUBLISHED" ? "Published" : "Draft"}
+              <Badge variant={isPublished ? "success" : "muted"}>
+                {isPublished ? "Published" : "Draft"}
               </Badge>
             </div>
             <div className="flex gap-2">
@@ -79,7 +79,7 @@ export function DocumentCard({
                 type="button"
                 size="sm"
                 variant="outline"
-                disabled={isMutating}
+                disabled={isDeleteDisabled}
                 className="border-red-600/70 text-red-300 hover:border-red-500 hover:bg-red-600/15"
                 onClick={() => onDelete(document.id)}
               >
