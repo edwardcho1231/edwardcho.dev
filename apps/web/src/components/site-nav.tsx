@@ -22,6 +22,12 @@ export function SiteNav({ showAuthControls = false }: SiteNavProps) {
               />
             </Link>
             <Link
+              href="/about"
+              className="px-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)] transition-colors hover:text-[var(--app-link-hover)]"
+            >
+              About
+            </Link>
+            <Link
               href="/blog"
               className="px-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)] transition-colors hover:text-[var(--app-link-hover)]"
             >
