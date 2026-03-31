@@ -3,6 +3,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma, TransactionClient } from "@repo/db";
 import { isPublisher } from "@/lib/publisher-auth";
+import {
+  internalServerErrorResponse,
+  unauthorizedResponse,
+} from "../responses";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -11,18 +15,6 @@ const createDocumentSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
   content: z.string().trim().min(1, "Content is required"),
 });
-
-function unauthorizedResponse() {
-  return NextResponse.json(
-    {
-      error: {
-        code: "UNAUTHORIZED",
-        message: "Authentication required",
-      },
-    },
-    { status: 401 },
-  );
-}
 
 function invalidDocumentDataResponse() {
   return NextResponse.json(
@@ -33,18 +25,6 @@ function invalidDocumentDataResponse() {
       },
     },
     { status: 400 },
-  );
-}
-
-function internalServerErrorResponse(message = "Internal server error") {
-  return NextResponse.json(
-    {
-      error: {
-        code: "INTERNAL_SERVER_ERROR",
-        message,
-      },
-    },
-    { status: 500 },
   );
 }
 

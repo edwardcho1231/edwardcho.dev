@@ -2,6 +2,10 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@repo/db";
+import {
+  internalServerErrorResponse,
+  unauthorizedResponse,
+} from "../responses";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -10,36 +14,12 @@ const querySchema = z.object({
   documentId: z.uuid("Invalid document ID"),
 });
 
-function unauthorizedResponse() {
-  return NextResponse.json(
-    {
-      error: {
-        code: "UNAUTHORIZED",
-        message: "Authentication required",
-      },
-    },
-    { status: 401 },
-  );
-}
-
 function invalidDocumentIdResponse() {
   return NextResponse.json(
     {
       error: { code: "INVALID_DOCUMENT_ID", message: "A valid document ID is required" },
     },
     { status: 400 },
-  );
-}
-
-function internalServerErrorResponse() {
-  return NextResponse.json(
-    {
-      error: {
-        code: "INTERNAL_SERVER_ERROR",
-        message: "Unable to load revisions",
-      },
-    },
-    { status: 500 },
   );
 }
 
@@ -70,6 +50,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ revisions });
   } catch (_error) {
-    return internalServerErrorResponse();
+    return internalServerErrorResponse("Unable to load revisions");
   }
 }

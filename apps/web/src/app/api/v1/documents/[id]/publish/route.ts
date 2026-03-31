@@ -3,6 +3,11 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma, TransactionClient } from "@repo/db";
 import { isPublisher } from "@/lib/publisher-auth";
+import {
+  forbiddenResponse,
+  internalServerErrorResponse,
+  unauthorizedResponse,
+} from "../../../responses";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -27,30 +32,6 @@ type DocumentParams = { params: { id: string } | Promise<{ id: string }> };
 async function getDocumentId(context: DocumentParams) {
   const params = await context.params;
   return documentIdSchema.safeParse(params);
-}
-
-function unauthorizedResponse() {
-  return NextResponse.json(
-    {
-      error: {
-        code: "UNAUTHORIZED",
-        message: "Authentication required",
-      },
-    },
-    { status: 401 },
-  );
-}
-
-function forbiddenResponse() {
-  return NextResponse.json(
-    {
-      error: {
-        code: "FORBIDDEN",
-        message: "You are not allowed to publish documents",
-      },
-    },
-    { status: 403 },
-  );
 }
 
 function invalidDocumentIdResponse() {
@@ -92,18 +73,6 @@ function notFoundResponse() {
   );
 }
 
-function internalServerErrorResponse(message = "Internal server error") {
-  return NextResponse.json(
-    {
-      error: {
-        code: "INTERNAL_SERVER_ERROR",
-        message,
-      },
-    },
-    { status: 500 },
-  );
-}
-
 function isUniqueConstraintError(error: unknown): boolean {
   return (
     typeof error === "object" &&
@@ -121,7 +90,7 @@ export async function PATCH(request: Request, context: DocumentParams) {
   }
 
   if (!isPublisher(userId)) {
-    return forbiddenResponse();
+    return forbiddenResponse("You are not allowed to publish documents");
   }
 
   const parsedId = await getDocumentId(context);

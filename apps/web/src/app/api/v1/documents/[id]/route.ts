@@ -2,6 +2,10 @@ import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma, TransactionClient } from "@repo/db";
+import {
+  internalServerErrorResponse,
+  unauthorizedResponse,
+} from "../../responses";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -22,36 +26,12 @@ async function getDocumentId(context: DocumentParams) {
   return documentIdSchema.safeParse(params);
 }
 
-function unauthorizedResponse() {
-  return NextResponse.json(
-    {
-      error: {
-        code: "UNAUTHORIZED",
-        message: "Authentication required",
-      },
-    },
-    { status: 401 },
-  );
-}
-
 function invalidDocumentIdResponse() {
   return NextResponse.json(
     {
       error: { code: "INVALID_DOCUMENT_ID", message: "Invalid document ID" },
     },
     { status: 400 },
-  );
-}
-
-function internalServerErrorResponse(message = "Internal server error") {
-  return NextResponse.json(
-    {
-      error: {
-        code: "INTERNAL_SERVER_ERROR",
-        message,
-      },
-    },
-    { status: 500 },
   );
 }
 
