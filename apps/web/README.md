@@ -8,7 +8,7 @@ For database-specific setup, read `../../packages/db/README.md`.
 ## Scope
 
 - Public portfolio pages
-- Auth-gated documents workspace
+- Publisher-only documents workspace
 - API routes under `src/app/api/v1` (same origin)
 
 ## Required environment variables
@@ -49,34 +49,38 @@ Current API routes in `src/app/api/v1`:
   - Returns `{ "status": "ok" }`
 
 - `GET /api/v1/documents`
-  - Requires Clerk auth
+  - Requires Clerk auth and publisher access
   - Returns current user id and document list (including `latestRevision`)
 
 - `POST /api/v1/documents`
-  - Requires Clerk auth
+  - Requires Clerk auth and publisher access
   - Body:
     - `title: string`
     - `content: string`
   - Creates a `Document`, creates initial `Revision`, then updates `latestRevisionId`
 
 - `PUT /api/v1/documents/:id`
-  - Requires Clerk auth
+  - Requires Clerk auth and publisher access
   - Body:
     - `title: string`
     - `content: string`
   - Creates a new revision and updates `latestRevisionId`
 
 - `DELETE /api/v1/documents/:id`
-  - Requires Clerk auth
+  - Requires Clerk auth and publisher access
   - Deletes the document and all associated revisions for the signed-in owner
 
 - `GET /api/v1/revisions?documentId=<document-uuid>`
-  - Requires Clerk auth
+  - Requires Clerk auth and publisher access
   - Returns revisions for the document ordered by newest first
 
-## Testing Authenticated API Calls with curl
+- `GET /api/v1/documents/access`
+  - Requires Clerk auth
+  - Returns whether the signed-in user has publisher access to the documents workspace
 
-1. Sign in to the web app.
+## Testing Publisher-Only API Calls with curl
+
+1. Sign in to the web app with a publisher-authorized account.
 2. In browser console, get a fresh token:
 
 ```js

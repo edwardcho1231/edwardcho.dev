@@ -2,13 +2,13 @@
 
 edwardcho.dev is my personal site and publishing platform, built with Next.js, React, TypeScript, Tailwind CSS, Clerk, Prisma, and PostgreSQL.
 
-It showcases my engineering work while also serving as an experimental product inspired by editorial CMS patterns I use in production: authenticated content workflows, revisioned documents, and API-backed content management.
+It showcases my engineering work while also serving as an experimental product inspired by editorial CMS patterns I use in production: publisher-only content workflows, revisioned documents, and API-backed content management.
 
-Today, the primary workflow is a private document workspace with markdown authoring and revision history. Over time, this repo will also power blog publishing and additional project showcases under the same platform.
+Today, the primary workflow is a private, publisher-only document workspace with markdown authoring and revision history. Over time, this repo will also power blog publishing and additional project showcases under the same platform.
 
 ## What This Project Highlights
 
-- Authenticated document lifecycle flows for user-owned content
+- Publisher-only document lifecycle flows for private content management
 - Append-only revision history with latest-revision pointers
 - Typed API validation and ownership enforcement
 - Monorepo boundaries that separate app runtime concerns from database concerns
@@ -16,9 +16,9 @@ Today, the primary workflow is a private document workspace with markdown author
 
 ## Current Capabilities
 
-- Public personal-site pages alongside a private document workspace
+- Public personal-site pages alongside a private, publisher-only document workspace
 - Markdown authoring with live preview
-- Clerk-authenticated routes and protected API interactions
+- Clerk-authenticated routes with publisher-only editor and document API access
 - Prisma/PostgreSQL persistence with revisioned document history
 - Next.js App Router and Route Handler backend patterns
 - Reusable UI built with Tailwind CSS and shadcn/ui
@@ -29,8 +29,8 @@ Today, the primary workflow is a private document workspace with markdown author
 
 ```mermaid
 flowchart TD
-  A[Author] --> B["/documents editor UI"]
-  B --> C["Clerk auth gate"]
+  A[Publisher] --> B["/documents editor UI"]
+  B --> C["Clerk auth + publisher gate"]
   C --> D["GET /api/v1/documents"]
   C --> E["POST /api/v1/documents"]
   C --> F["PUT /api/v1/documents/:id"]
@@ -107,7 +107,7 @@ erDiagram
 
 ```text
 apps/
-  web/      Next.js App Router app for the public site, authenticated document workspace, and API route handlers
+  web/      Next.js App Router app for the public site, publisher-only document workspace, and API route handlers
 packages/
   db/       Prisma schema, migrations, and generated client package for PostgreSQL
   types/    Shared TypeScript types
