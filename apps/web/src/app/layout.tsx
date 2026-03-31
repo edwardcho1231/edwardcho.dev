@@ -1,3 +1,4 @@
+import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -34,9 +35,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="min-h-screen bg-[var(--app-background)] text-[var(--app-foreground)]">
-          {children}
-        </div>
+        <ClerkProvider afterSignOutUrl="/">
+          <div className="min-h-screen bg-[var(--app-background)] text-[var(--app-foreground)]">
+            {children}
+          </div>
+        </ClerkProvider>
       </body>
     </html>
   );

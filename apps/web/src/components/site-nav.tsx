@@ -1,11 +1,8 @@
 import Link from "next/link";
 import { AuthNavControls } from "./auth-nav-controls";
+import { DocumentsNavLink } from "./documents-nav-link";
 
-type SiteNavProps = {
-  showAuthControls?: boolean;
-};
-
-export function SiteNav({ showAuthControls = false }: SiteNavProps) {
+export function SiteNav() {
   return (
     <header className="sticky top-0 z-10 h-16 border-b border-[var(--app-border)] bg-[var(--app-surface)]/75 backdrop-blur">
       <div className="mx-auto w-full flex h-full items-center px-5">
@@ -39,20 +36,9 @@ export function SiteNav({ showAuthControls = false }: SiteNavProps) {
             >
               Projects
             </Link>
-            <Link
-              href="/documents"
-              className="px-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)] transition-colors hover:text-[var(--app-link-hover)]"
-            >
-              Editor Lab
-            </Link>
+            <DocumentsNavLink />
           </div>
-          {showAuthControls ? (
-            <AuthNavControls />
-          ) : (
-            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)]">
-              edwardcho.dev
-            </span>
-          )}
+          <AuthNavControls />
         </div>
       </div>
     </header>

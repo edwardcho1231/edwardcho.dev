@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function ProjectEdwardChoDevPage() {
   return (
     <main className="mx-auto min-h-[calc(100vh-4.2rem)] max-w-3xl px-6 py-16">
@@ -53,15 +51,6 @@ export default function ProjectEdwardChoDevPage() {
           </div>
         </div>
       </section>
-      <p className="mt-6">
-        <Link
-          href="/documents"
-          className="inline-flex rounded border border-[var(--app-border)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)] transition-colors hover:border-[var(--app-link-hover)] hover:text-[var(--app-link-hover)]"
-        >
-          Explore Editor Lab
-        </Link>
-      </p>
-
       <section className="mt-10">
         <p className="text-sm font-medium uppercase tracking-[0.16em] text-[var(--app-muted)]">
           Context

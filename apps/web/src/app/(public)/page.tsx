@@ -76,12 +76,6 @@ export default function Home() {
           >
             Read Case Study
           </Link>
-          <Link
-            href="/documents"
-            className="inline-flex rounded border border-[var(--app-border)] px-4 py-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--app-muted)] transition-colors hover:border-[var(--app-link-hover)] hover:text-[var(--app-link-hover)]"
-          >
-            Explore Editor Lab
-          </Link>
         </div>
       </section>
     </main>
