@@ -11,7 +11,6 @@ import {
   type CreateDocumentPayload,
   type PublishDocumentPayload,
 } from "../payload-types";
-import { uploadDocumentImage } from "../services";
 import { DocumentEditorUI } from "./document-editor-ui";
 
 const MAX_CONTENT_LENGTH = 10000;
@@ -46,6 +45,10 @@ type DocumentEditorProps = {
     payload: PublishDocumentPayload,
   ) => Promise<boolean>;
   onUnpublishDocument: (documentId: string) => Promise<boolean>;
+  onUploadImage: (
+    documentId: string,
+    file: File,
+  ) => Promise<{ url: string; pathname: string }>;
   onCancelEdit: () => void;
 };
 
@@ -61,6 +64,7 @@ export function DocumentEditor({
   onSubmitDocument,
   onPublishDocument,
   onUnpublishDocument,
+  onUploadImage,
   onCancelEdit,
 }: DocumentEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -156,7 +160,7 @@ export function DocumentEditor({
     setUploadError(null);
 
     try {
-      const uploaded = await uploadDocumentImage(editorDocument.id, file);
+      const uploaded = await onUploadImage(editorDocument.id, file);
       const textarea = textareaRef.current;
       const currentContent = textarea?.value ?? content;
       const selectionStart = textarea?.selectionStart ?? currentContent.length;
