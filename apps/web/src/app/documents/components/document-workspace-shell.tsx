@@ -19,6 +19,7 @@ const ACTIVE_ACTION_KIND = {
 type DocumentWorkspaceShellProps = {
   adapter: DocumentWorkspaceAdapter;
   title?: string;
+  description?: string;
   documentsHeading?: string;
   buildRevisionsHref: (documentId: string) => string;
 };
@@ -26,6 +27,7 @@ type DocumentWorkspaceShellProps = {
 export function DocumentWorkspaceShell({
   adapter,
   title = "Documents",
+  description,
   documentsHeading = "My Documents",
   buildRevisionsHref,
 }: DocumentWorkspaceShellProps) {
@@ -193,6 +195,11 @@ export function DocumentWorkspaceShell({
   return (
     <main className="mx-auto max-w-7xl px-6 py-16">
       <h1 className="text-4xl font-semibold">{title}</h1>
+      {description ? (
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--app-muted)]">
+          {description}
+        </p>
+      ) : null}
 
       <Card className="mt-8">
         <CardHeader>

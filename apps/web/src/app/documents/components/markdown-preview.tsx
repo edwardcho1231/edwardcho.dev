@@ -1,10 +1,10 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
-import rehypeSanitize from "rehype-sanitize";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 
 type MarkdownPreviewProps = {
   content: string;
@@ -12,6 +12,22 @@ type MarkdownPreviewProps = {
   clampLines?: number;
   fallback?: string;
 };
+
+const markdownSanitizeSchema = {
+  ...defaultSchema,
+  protocols: {
+    ...defaultSchema.protocols,
+    src: [...(defaultSchema.protocols?.src ?? []), "blob"],
+  },
+};
+
+function markdownUrlTransform(url: string, key: string, node: { tagName?: string }) {
+  if (key === "src" && node.tagName === "img" && /^blob:/i.test(url)) {
+    return url;
+  }
+
+  return defaultUrlTransform(url);
+}
 
 export function MarkdownPreview({
   content,
@@ -41,7 +57,8 @@ export function MarkdownPreview({
     >
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkBreaks]}
-        rehypePlugins={[rehypeSanitize]}
+        rehypePlugins={[[rehypeSanitize, markdownSanitizeSchema]]}
+        urlTransform={markdownUrlTransform}
         components={{
           pre: ({ node: _node, ...props }) => (
             <pre

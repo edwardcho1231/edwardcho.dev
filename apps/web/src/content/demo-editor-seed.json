@@ -1,0 +1,53 @@
+{
+  "userId": "demo-user",
+  "isPublisher": true,
+  "documents": [
+    {
+      "id": "f3f2f356-3ecf-4e68-96fb-6b842c3df111",
+      "ownerId": "demo-user",
+      "createdAt": "2026-03-15T14:10:00.000Z",
+      "updatedAt": "2026-03-28T17:45:00.000Z",
+      "kind": "PROJECT",
+      "status": "PUBLISHED",
+      "slug": "editor-workflow-demo",
+      "excerpt": "A public walkthrough of the editor workflow, from drafting through publishing.",
+      "publishedAt": "2026-03-28T17:45:00.000Z",
+      "revisions": [
+        {
+          "id": "0a5c5610-e85d-4cc0-9a0b-aefe84e4d111",
+          "revisionNumber": 1,
+          "title": "Editor Workflow Demo",
+          "content": "## Draft 1\n\nThis demo document shows the editor flow before publication.\n\n- Markdown authoring\n- Revision history\n- Publishing controls\n",
+          "createdAt": "2026-03-15T14:10:00.000Z"
+        },
+        {
+          "id": "64eb6ec7-a653-42fd-9b0f-d2ee1b3dd111",
+          "revisionNumber": 2,
+          "title": "Editor Workflow Demo",
+          "content": "## Draft 2\n\nThis demo document shows the editor flow before publication.\n\n![Editorial workspace](/demo/editor-workflow-seed.png)\n\n- Markdown authoring\n- Revision history\n- Publishing controls\n- Image rendering in preview and published pages\n",
+          "createdAt": "2026-03-28T17:45:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "ce67a274-b2e7-4e73-9d6f-14f651e59222",
+      "ownerId": "demo-user",
+      "createdAt": "2026-03-20T09:30:00.000Z",
+      "updatedAt": "2026-03-29T12:20:00.000Z",
+      "kind": null,
+      "status": "DRAFT",
+      "slug": null,
+      "excerpt": null,
+      "publishedAt": null,
+      "revisions": [
+        {
+          "id": "a367f33b-f76d-4104-8d7a-db6fb8a3b222",
+          "revisionNumber": 1,
+          "title": "Billing Flow Notes",
+          "content": "Working draft for a billing and account-management walkthrough.\n\n### Notes\n\n- cancellation flow edge cases\n- retry messaging\n- account summary states\n",
+          "createdAt": "2026-03-29T12:20:00.000Z"
+        }
+      ]
+    }
+  ]
+}
