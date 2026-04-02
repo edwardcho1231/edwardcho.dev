@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function ProjectEdwardChoDevPage() {
   return (
     <main className="mx-auto min-h-[calc(100vh-4.2rem)] max-w-3xl px-6 py-16">
@@ -46,10 +48,27 @@ export default function ProjectEdwardChoDevPage() {
               Stack
             </p>
             <p className="mt-1 text-sm text-[var(--app-foreground)]">
-              Next.js, Clerk, Prisma, PostgreSQL, Zod
+              Next.js, Clerk, Prisma, PostgreSQL, Zod, Vercel Blob
             </p>
           </div>
         </div>
+      </section>
+      <section className="mt-6 rounded-md border border-[var(--app-border)] bg-[var(--app-surface)]/40 p-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--app-muted)]">
+          Public Demo
+        </p>
+        <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--app-muted)]">
+          The production editor stays private. I added a public demo route that
+          reuses the same workspace UI with seeded in-memory data, so visitors
+          can walk through document editing, revision history, publishing, and
+          image upload behavior without touching real content.
+        </p>
+        <Link
+          href="/demo/editor"
+          className="mt-4 inline-flex rounded-full border border-[var(--app-border)] px-4 py-2 text-sm font-medium text-[var(--app-foreground)] transition hover:border-[var(--app-foreground)] hover:bg-[var(--app-surface)]"
+        >
+          Open Public Editor Demo
+        </Link>
       </section>
       <section className="mt-10">
         <p className="text-sm font-medium uppercase tracking-[0.16em] text-[var(--app-muted)]">
@@ -63,8 +82,8 @@ export default function ProjectEdwardChoDevPage() {
         </p>
         <p className="mt-3 text-sm leading-7 text-[var(--app-muted)]">
           I also used the project to explore editorial workflows more deeply by
-          working through how drafting, revision history, and public delivery
-          fit together in one platform.
+          working through how drafting, revision history, media handling, and
+          public delivery fit together in one platform.
         </p>
       </section>
 
