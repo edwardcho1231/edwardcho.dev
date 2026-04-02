@@ -24,7 +24,8 @@ This repository is the edwardcho.dev monorepo.
 - Use `rg` for file searching instead of `grep`.
 - Use `apply_patch` for file edits when possible.
 - Avoid unnecessary file system reads.
-- Do not run tests/builds/validation unless the user explicitly requests them.
+- After making code changes, always run the relevant lint/check/test commands for the touched area before finalizing.
+- Treat unverified code as incomplete. If a relevant check cannot be run, call that out explicitly.
 
 ## Development Commands (reference)
 - Install deps: `pnpm install`
@@ -46,6 +47,16 @@ This repository is the edwardcho.dev monorepo.
 ## Communication Style
 - Be concise, practical, and explicit with outcomes.
 - Prioritize fixing the requested behavior, then suggest optional follow-ups.
+- After code changes, explain why the chosen approach was used and mention notable tradeoffs or a reasonable alternative when relevant.
+
+## Agent Collaboration
+- Keep the main agent focused on the critical path and overall integration.
+- If a subtask can be cleanly delegated to a subagent, prefer delegating it.
+- If independent subtasks can be done in parallel, prefer using multiple subagents when it is more efficient.
+- Use subagents for bounded exploration, verification, or implementation work that can be isolated without creating merge confusion.
+- After subagent work completes, review and integrate the results rather than duplicating the same work in the main agent.
+- Close subagents once their bounded task is complete unless their context will be reused immediately.
+- Do not leave finished subagents open by default; treat cleanup as part of completing the task.
 
 ## General Operating Principles
 - Source of truth:
@@ -59,7 +70,7 @@ This repository is the edwardcho.dev monorepo.
 - Small, reversible changes:
   - Prefer incremental edits that are easy to review, reason about, and roll back.
 - Verify before finalizing:
-  - Confirm key assumptions with quick checks before reporting completion.
+  - Confirm key assumptions with quick lint/test/build checks before reporting completion.
 - Environment-aware guidance:
   - Keep setup and operational guidance portable across environments.
   - Avoid machine-specific details in committed docs and instructions.
