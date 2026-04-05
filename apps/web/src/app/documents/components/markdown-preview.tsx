@@ -58,7 +58,7 @@ export function MarkdownPreview({
 
   return (
     <div
-      className={`markdown-preview prose prose-sm max-w-none prose-code:before:content-none prose-code:after:content-none ${className}`}
+      className={`markdown-preview prose prose-sm max-w-none break-words [overflow-wrap:anywhere] prose-code:before:content-none prose-code:after:content-none ${className}`}
       style={maxHeight}
     >
       <ReactMarkdown
@@ -113,7 +113,7 @@ export function MarkdownPreview({
           ),
           code: ({ node: _node, className, ...props }) => (
             <code
-              className={`rounded bg-[var(--app-surface-alt)] px-1.5 py-0.5 font-mono text-sm text-[var(--app-foreground)] ${
+              className={`break-words [overflow-wrap:anywhere] rounded bg-[var(--app-surface-alt)] px-1.5 py-0.5 font-mono text-sm text-[var(--app-foreground)] ${
                 className ?? ""
               }`}
               {...props}
