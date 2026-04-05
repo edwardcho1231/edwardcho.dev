@@ -5,8 +5,14 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { type DocumentRevisionDto } from "@/types/documents";
 import { MarkdownPreview } from "./markdown-preview";
+import {
+  getComparisonCandidates,
+  resolveComparisonRevisionId,
+} from "./revision-compare";
+import { RevisionDiffView } from "./revision-diff-view";
 
 function RevisionListItem({
   revision,
@@ -28,7 +34,9 @@ function RevisionListItem({
             : "border-[var(--app-border)] hover:border-[var(--app-muted)]"
         }`}
       >
-        <p className="text-sm font-medium">Revision #{revision.revisionNumber}</p>
+        <p className="text-sm font-medium">
+          Revision #{revision.revisionNumber}
+        </p>
         <p className="mt-1 text-xs text-[var(--app-muted)]">
           {new Date(revision.createdAt).toLocaleString()}
         </p>
@@ -53,6 +61,10 @@ export function DocumentRevisionsShell({
   const [revisions, setRevisions] = useState<DocumentRevisionDto[]>([]);
   const [selectedRevision, setSelectedRevision] =
     useState<DocumentRevisionDto | null>(null);
+  const [isCompareMode, setIsCompareMode] = useState(false);
+  const [comparisonRevisionId, setComparisonRevisionId] = useState<
+    string | null
+  >(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,6 +73,8 @@ export function DocumentRevisionsShell({
       setError("Invalid document.");
       setRevisions([]);
       setSelectedRevision(null);
+      setIsCompareMode(false);
+      setComparisonRevisionId(null);
       return;
     }
 
@@ -71,10 +85,13 @@ export function DocumentRevisionsShell({
       const fetchedRevisions = await loadRevisions(documentId);
       setRevisions(fetchedRevisions);
       setSelectedRevision((previous) =>
-        previous && fetchedRevisions.some((revision) => revision.id === previous.id)
+        previous &&
+        fetchedRevisions.some((revision) => revision.id === previous.id)
           ? previous
-          : fetchedRevisions[0] ?? null,
+          : (fetchedRevisions[0] ?? null),
       );
+      setIsCompareMode(false);
+      setComparisonRevisionId(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load revisions");
     } finally {
@@ -91,13 +108,49 @@ export function DocumentRevisionsShell({
     () => selectedRevision?.title || "Untitled revision",
     [selectedRevision?.title],
   );
+  const comparisonCandidates = useMemo(
+    () => getComparisonCandidates(revisions, selectedRevision?.id ?? null),
+    [revisions, selectedRevision?.id],
+  );
+  const resolvedComparisonRevisionId = useMemo(
+    () =>
+      resolveComparisonRevisionId(
+        revisions,
+        selectedRevision?.id ?? null,
+        comparisonRevisionId,
+      ),
+    [comparisonRevisionId, revisions, selectedRevision?.id],
+  );
+  const comparisonRevision = useMemo(
+    () =>
+      comparisonCandidates.find(
+        (revision) => revision.id === resolvedComparisonRevisionId,
+      ) ?? null,
+    [comparisonCandidates, resolvedComparisonRevisionId],
+  );
+  const canCompare = comparisonCandidates.length > 0;
+
+  useEffect(() => {
+    if (comparisonRevisionId !== resolvedComparisonRevisionId) {
+      setComparisonRevisionId(resolvedComparisonRevisionId);
+    }
+  }, [comparisonRevisionId, resolvedComparisonRevisionId]);
+
+  useEffect(() => {
+    if (isCompareMode && !comparisonRevision) {
+      setIsCompareMode(false);
+    }
+  }, [comparisonRevision, isCompareMode]);
 
   return (
     <main className="mx-auto max-w-7xl px-6 py-16">
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-[var(--app-muted)]">
-            <Link href={backHref} className="hover:text-[var(--app-link-hover)]">
+            <Link
+              href={backHref}
+              className="hover:text-[var(--app-link-hover)]"
+            >
               ← Back to Documents
             </Link>
           </p>
@@ -111,7 +164,9 @@ export function DocumentRevisionsShell({
         <Card className="h-fit">
           <CardContent className="space-y-4 p-4">
             <p className="text-sm text-[var(--app-muted)]">
-              {loading ? "Loading revisions..." : `Revision count: ${revisions.length}`}
+              {loading
+                ? "Loading revisions..."
+                : `Revision count: ${revisions.length}`}
             </p>
             <ul className="space-y-2">
               {hasRevisions ? (
@@ -120,11 +175,15 @@ export function DocumentRevisionsShell({
                     key={revision.id}
                     revision={revision}
                     isSelected={selectedRevision?.id === revision.id}
-                    onSelect={(nextRevision) => setSelectedRevision(nextRevision)}
+                    onSelect={(nextRevision) =>
+                      setSelectedRevision(nextRevision)
+                    }
                   />
                 ))
               ) : (
-                <li className="text-sm text-[var(--app-muted)]">No revisions yet.</li>
+                <li className="text-sm text-[var(--app-muted)]">
+                  No revisions yet.
+                </li>
               )}
             </ul>
           </CardContent>
@@ -134,26 +193,80 @@ export function DocumentRevisionsShell({
           <CardContent className="space-y-4 p-4">
             {selectedRevision ? (
               <>
-                <div>
-                  <p className="text-sm text-[var(--app-muted)]">
-                    Revision #{selectedRevision.revisionNumber}
-                  </p>
-                  <h2 className="text-2xl font-semibold">{selectedRevisionTitle}</h2>
-                  <p className="text-xs text-[var(--app-muted)]">
-                    {new Date(selectedRevision.createdAt).toLocaleString()}
-                  </p>
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm text-[var(--app-muted)]">
+                      Revision #{selectedRevision.revisionNumber}
+                    </p>
+                    <h2 className="text-2xl font-semibold">
+                      {selectedRevisionTitle}
+                    </h2>
+                    <p className="text-xs text-[var(--app-muted)]">
+                      {new Date(selectedRevision.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {isCompareMode ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsCompareMode(false)}
+                      >
+                        Exit Compare
+                      </Button>
+                    ) : canCompare ? (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsCompareMode(true)}
+                      >
+                        Compare
+                      </Button>
+                    ) : null}
+                  </div>
                 </div>
-                <MarkdownPreview content={selectedRevision.content} className="text-sm" />
-                <div className="pt-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setSelectedRevision(null)}
-                    disabled={!selectedRevision}
-                  >
-                    Clear selection
-                  </Button>
-                </div>
+                {isCompareMode && comparisonRevision ? (
+                  <>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="compare-revision">Compare Against</Label>
+                      <select
+                        id="compare-revision"
+                        className="h-9 w-full rounded-md border border-[var(--app-border)] bg-transparent px-3 text-sm"
+                        value={resolvedComparisonRevisionId ?? ""}
+                        onChange={(event) =>
+                          setComparisonRevisionId(event.target.value)
+                        }
+                      >
+                        {comparisonCandidates.map((revision) => (
+                          <option key={revision.id} value={revision.id}>
+                            Revision #{revision.revisionNumber} ·{" "}
+                            {new Date(revision.createdAt).toLocaleString()}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-xs text-[var(--app-muted)]">
+                        The selected revision stays fixed as the newer revision.
+                      </p>
+                    </div>
+                    <RevisionDiffView
+                      olderRevision={comparisonRevision}
+                      newerRevision={selectedRevision}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <MarkdownPreview
+                      content={selectedRevision.content}
+                      className="text-sm"
+                    />
+                    {!canCompare ? (
+                      <p className="text-xs text-[var(--app-muted)]">
+                        Compare becomes available once the document has an older
+                        revision.
+                      </p>
+                    ) : null}
+                  </>
+                )}
               </>
             ) : (
               <p className="text-sm text-[var(--app-muted)]">
