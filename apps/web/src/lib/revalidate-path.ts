@@ -31,6 +31,6 @@ export function revalidateDocumentPaths(
   addDocumentPaths(paths, current);
 
   for (const path of paths) {
-    revalidatePath(path, "page");
+    revalidatePath(path);
   }
 }

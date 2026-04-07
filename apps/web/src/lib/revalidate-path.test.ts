@@ -18,11 +18,7 @@ describe("revalidate path helpers", () => {
     revalidateDocumentPaths({ kind: "BLOG", slug: "hello-world" });
 
     expect(revalidatePathMock).toHaveBeenCalledTimes(1);
-    expect(revalidatePathMock).toHaveBeenNthCalledWith(
-      1,
-      "/blog/hello-world",
-      "page",
-    );
+    expect(revalidatePathMock).toHaveBeenNthCalledWith(1, "/blog/hello-world");
   });
 
   it("revalidates both old and new detail paths for a published slug change", () => {
@@ -32,16 +28,8 @@ describe("revalidate path helpers", () => {
     );
 
     expect(revalidatePathMock).toHaveBeenCalledTimes(2);
-    expect(revalidatePathMock).toHaveBeenNthCalledWith(
-      1,
-      "/blog/old-slug",
-      "page",
-    );
-    expect(revalidatePathMock).toHaveBeenNthCalledWith(
-      2,
-      "/blog/new-slug",
-      "page",
-    );
+    expect(revalidatePathMock).toHaveBeenNthCalledWith(1, "/blog/old-slug");
+    expect(revalidatePathMock).toHaveBeenNthCalledWith(2, "/blog/new-slug");
   });
 
   it("revalidates both old and new detail paths for kind changes", () => {
@@ -51,15 +39,10 @@ describe("revalidate path helpers", () => {
     );
 
     expect(revalidatePathMock).toHaveBeenCalledTimes(2);
-    expect(revalidatePathMock).toHaveBeenNthCalledWith(
-      1,
-      "/blog/launch-post",
-      "page",
-    );
+    expect(revalidatePathMock).toHaveBeenNthCalledWith(1, "/blog/launch-post");
     expect(revalidatePathMock).toHaveBeenNthCalledWith(
       2,
       "/projects/launch-post",
-      "page",
     );
   });
 });
