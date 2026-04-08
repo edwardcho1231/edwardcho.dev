@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedDocuments } from "@/lib/public-content";
+import { projectsIndexMetadata } from "@/lib/seo";
 import { type PublishedDocumentRecord } from "@/types/documents";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = projectsIndexMetadata;
 
 export default async function ProjectsIndexPage() {
   const documents: PublishedDocumentRecord[] =

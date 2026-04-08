@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { MarkdownPreview } from "../../../documents/components/markdown-preview";
 import {
   getPublishedDocumentBySlug,
   getPublishedDocuments,
 } from "@/lib/public-content";
+import { buildDocumentMetadata } from "@/lib/seo";
 import { type PublishedDocumentRecord } from "@/types/documents";
 
 type ProjectPageProps = {
@@ -16,6 +18,22 @@ export async function generateStaticParams() {
   return documents
     .filter((doc) => !!doc.slug)
     .map((doc) => ({ slug: doc.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: ProjectPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const document = await getPublishedDocumentBySlug(
+    "PROJECT",
+    decodeURIComponent(slug),
+  );
+
+  if (!document || !document.latestRevision) {
+    return {};
+  }
+
+  return buildDocumentMetadata(document);
 }
 
 export default async function ProjectPage({ params }: ProjectPageProps) {

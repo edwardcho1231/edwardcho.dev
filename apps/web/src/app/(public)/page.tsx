@@ -1,4 +1,8 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { homeMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = homeMetadata;
 
 export default function Home() {
   return (

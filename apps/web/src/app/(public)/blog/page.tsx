@@ -1,8 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getPublishedDocuments } from "@/lib/public-content";
+import { blogIndexMetadata } from "@/lib/seo";
 import { type PublishedDocumentRecord } from "@/types/documents";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = blogIndexMetadata;
 
 export default async function BlogIndexPage() {
   const documents: PublishedDocumentRecord[] =

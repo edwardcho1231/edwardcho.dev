@@ -1,6 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { rootMetadata } from "@/lib/seo";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,11 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Edward Cho | Senior Software Engineer",
-  description:
-    "Portfolio and notes from a senior software engineer building simple, resilient web systems.",
-};
+export const metadata: Metadata = rootMetadata;
 
 export default function RootLayout({
   children,

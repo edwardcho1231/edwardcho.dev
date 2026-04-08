@@ -1,4 +1,18 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  ...buildPageMetadata(
+    "edwardcho.dev Case Study | Edward Cho",
+    "Case study on building edwardcho.dev as a portfolio platform and private editor lab.",
+    "/project/edwardcho.dev",
+  ),
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function ProjectEdwardChoDevPage() {
   return (

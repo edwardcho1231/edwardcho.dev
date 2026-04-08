@@ -3,12 +3,9 @@ import path from "node:path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MarkdownPreview } from "../../documents/components/markdown-preview";
+import { aboutMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "About | Edward Cho",
-  description:
-    "Background, experience, and delivery focus across editorial and subscription platforms.",
-};
+export const metadata: Metadata = aboutMetadata;
 
 async function getAboutContent() {
   const filePath = path.join(process.cwd(), "src/content/about.md");

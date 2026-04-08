@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MarkdownPreview } from "../../../documents/components/markdown-preview";
 import {
   getPublishedDocumentBySlug,
   getPublishedDocuments,
 } from "@/lib/public-content";
+import { buildDocumentMetadata } from "@/lib/seo";
 import { type PublishedDocumentRecord } from "@/types/documents";
 
 type BlogPostPageProps = {
@@ -16,6 +18,22 @@ export async function generateStaticParams() {
   return documents
     .filter((doc) => !!doc.slug)
     .map((doc) => ({ slug: doc.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const document = await getPublishedDocumentBySlug(
+    "BLOG",
+    decodeURIComponent(slug),
+  );
+
+  if (!document || !document.latestRevision) {
+    return {};
+  }
+
+  return buildDocumentMetadata(document);
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
