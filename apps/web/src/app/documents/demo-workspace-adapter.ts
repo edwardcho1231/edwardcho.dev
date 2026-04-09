@@ -9,6 +9,11 @@ import {
   type PublishDocumentPayload,
   type UpdateDocumentPayload,
 } from "./payload-types";
+import {
+  MAX_EXCERPT_LENGTH,
+  MAX_SLUG_LENGTH,
+  PUBLISH_SLUG_REGEX,
+} from "./editor-dirty-state";
 import { type DocumentWorkspaceAdapter } from "./workspace-adapter";
 import {
   type DocumentDto,
@@ -32,10 +37,6 @@ type DemoDocumentRecord = DemoSeedDocument;
 type CreateObjectUrl = (file: File) => string;
 
 const demoEditorSeed = demoEditorSeedJson as DemoWorkspaceSeed;
-const PUBLISH_SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const MAX_SLUG_LENGTH = 120;
-const MAX_EXCERPT_LENGTH = 300;
-
 function cloneRevision(revision: DocumentRevisionDto): DocumentRevisionDto {
   return { ...revision };
 }
